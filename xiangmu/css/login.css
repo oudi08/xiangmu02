@@ -1,0 +1,11 @@
+.form-horizontal div.form-group{
+    margin-left:0;
+    margin-right:15px;
+}
+.denglu{
+    width: 600px;
+    height: 500px;
+    background-color: rgb(206, 82, 0);
+    margin: 100px 50px 0 0;
+    float: right;
+}

@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>注册页面</title>
+<link rel="stylesheet" href="./css/bootstrap.min.css">
+<link rel="stylesheet" href="./css/register.css">
+</head>
+<body>
+    <div class="zuche">
+<div class="h1 text-center">注册页面</div>
+<form>
+    <div class="form-group">
+        <label for="exampleInputEmail1">用户名</label>
+        <input type="email" class="form-control" id="username" placeholder="请输入用户名">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">密码</label>
+        <input type="password" class="form-control" id="pass" placeholder="请输入密码">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">确认密码</label>
+        <input type="password" class="form-control" id="repass" placeholder="请再次输入密码">
+    </div>
+    <div class="checkbox">
+        <label>
+        <input type="checkbox" name="agree"> 同意协议
+        </label>
+    </div>
+    <button type="button" class="btn btn-default">注册</button>
+</form>
+</div>
+</body>
+<script src="./js/promiseAjax.js"></script>
+<script type="text/javascript">
+// 给复选框绑定单击事件，查看选中与不选中的区别 - checked属性
+// document.querySelector("[type='checkbox']").onclick=function(){
+//     // console.log(this.getAttribute("checked")); // 通常会体现在标签中
+//     console.log(this.checked); // 在标签上不显示，但是能用
+// }
+var btn = document.querySelector("button[type='button']");
+btn.addEventListener("click",register);
+function register(){
+    // 先同意协议
+    var agree = document.querySelector("[name='agree']");
+    if(!agree.checked){
+        alert("请同意协议！！！");
+        return;
+    }
+    // 获取用户名
+    var username = document.querySelector("#username").value.trim();
+    var password = document.querySelector("#pass").value.trim();
+    pAjax({
+        url:"./server/register.php",
+        type:"post",
+        data:{
+            username:username,
+            password:password,
+        }
+    }).then(function(res){
+        // console.log(res);
+        if(res.status==200){
+            alert(res.msg);
+            location.href = "login.html"
+        }else{
+            alert(res.msg);
+            return;
+        }
+    });
+}
+</script>
+</html>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>列表页</title>
+<link rel="stylesheet" href="./css/bootstrap.min.css">
+<link rel="stylesheet" href="./css/list.css">
+</head>
+<body>
+<div class="page-header">
+    <h1>列表页面 <small>T恤</small></h1>
+</div>
+<!-- 
+    栅格布局，
+    1.最外面必须有一个大容器，容器的类名可以是：container或.container-fluid
+    2.每一行都是一个类名row的div
+-->
+<div class="container">
+    <div class="row">      
+    </div>
+</div>
+</body>
+<script src="./js/page.js"></script>
+<script src="./js/promiseAjax.js"></script>
+<script type="text/javascript">
+pAjax({
+    url:"./server/list.php",
+    type:"get"
+}).then(function(res){
+    // console.log(res);
+    var total = res.length;
+    var pageSize = 8;
+    new Page({
+        pageData:{
+            total:total,
+            pageSize:pageSize
+        },
+        language:{
+            first:"首页",
+            previous:"上一页",
+            next:"下一页",
+            last:"尾页"
+        }
+    },function(currentPage){
+        var str = '';
+        var arr = res.slice((currentPage-1)*pageSize,currentPage*pageSize);
+        for(var i=0;i<arr.length;i++){
+            str += `
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="thumbnail">
+                    <img src="${arr[i].imgpath}">
+                    <div class="caption">
+                        <h3>${arr[i].name}</h3>
+                        <p>${arr[i].introduce}</p>
+                        <p><a href="detail.html?id=${arr[i].id}" class="btn btn-primary" role="button">查看详情</a></p>
+                    </div>
+                </div>
+            </div>
+            `
+            // 给查看详情加链接的时候，应该在链接后面传一个参数 - id=当前商品的id，方便在详情页找到 这个商品的信息
+        }
+        document.querySelector(".container .row").innerHTML = str;
+    });
+    
+});
+</script>
+</html>

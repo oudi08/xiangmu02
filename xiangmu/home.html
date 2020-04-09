@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>首页</title>
+<link rel="stylesheet" href="./css/bootstrap.min.css">
+<link rel="stylesheet" href="./css/swiper.min.css">
+<link rel="stylesheet" href="./css/home.css">
+</head>
+<body>
+<div class="fast">
+<!-- 巨幕 -->
+<div class="page-header">
+    <h1>首页<small>欢迎<span class="text-primary"></span>，<a href="javascript:;" class="btn btn-warning logout">退出</a></small></h1>
+</div>
+<div class="jumbotron">
+    <img src="https://gw.alicdn.com/tfs/TB1DP0yAoY1gK0jSZFMXXaWcVXa-1190-70.png" alt="">
+    <p><a class="btn btn-primary btn-lg" href="#" role="button">点击了解更多去往列表页</a></p>
+</div>
+<div class="content">
+  <!-- 搜索框 -->
+  <div class="inpI">
+    <input type="text" placeholder="男装/女装">
+    <button>搜索</button>
+  </div>
+  <!--导航条  -->
+  <div class="navL">
+    <ul></ul>
+  </div>
+<!-- 轮播图 -->
+<div class="swiper-container">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="https://img.alicdn.com/tps/i4/TB1TiYJBkL0gK0jSZFtSutQCXXa.jpg_q90_.webp" alt=""></div>
+        <div class="swiper-slide"><img src="https://aecpm.alicdn.com/simba/img/TB1JNHwKFXXXXafXVXXSutbFXXX.jpg" alt=""></div>
+        <div class="swiper-slide"><img src="https://img.alicdn.com/simba/img/TB1dnGvm2b2gK0jSZK9SuuEgFXa.jpg" alt=""></div>
+    </div>
+    <div class="swiper-pagination"></div><!--分页器。如果放置在swiper-container外面，需要自定义样式。-->
+</div>
+<!--右侧广告 -->
+<div class="tip">
+  <img src="https://img.alicdn.com/tps/i4/TB1TIGhAEY1gK0jSZFMSuuWcVXa.jpg_q90_.webp" width="242" height="280" alt="">
+  <span>广告<p>X</p></span>
+</div>
+<!-- //物品框 -->
+<div class="container">
+    <div class="row">
+        <ul></ul>
+    </div>
+</div>
+</div>
+</div>
+</body>
+<script src="./js/cookie.js"></script>
+<script src="./js/promiseAjax.js"></script>
+<script src="./js/swiper.min.js"></script>
+<script src="./js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript">
+var username = getCookie("username");
+if(username){
+    document.querySelector(".page-header small span").innerText = username;
+    document.querySelector(".page-header small a.logout").onclick = function(){
+        removeCookie("username");
+        document.querySelector(".page-header small").innerHTML = `
+            <a class="btn btn-info" href="login.html">登陆</a>
+            <a class="btn btn-danger" href="register.html">注册</a>
+        `
+    }
+}else{
+    document.querySelector(".page-header small").innerHTML = `
+        <a class="btn btn-info" href="login.html">登陆</a>
+        <a class="btn btn-danger" href="register.html">注册</a>
+    `
+}
+//导航请求
+    pAjax({
+      url:'./server/nav.php',
+      type:"get"
+    }).then(function(res){
+      var str ="";
+
+      for(var i=0;i<res.length;i++){
+        var li = document.createElement("li");
+        str +=`<li>${res[i].name}</li>`
+      }
+      document.querySelector(".navL ul").appendChild(li).innerHTML = str;
+    })
+    pAjax({
+        url:"./server/list.php",
+        type:"get"
+    }).then(function(res){
+        var str ="";
+        for(var i=0;i<res.length;i++){
+            var li = document.createElement("li");
+            str +=`<li>
+    <div class="col-sm-6 col-md-4">
+      <div class="thumbnail">
+        <img src="${res[i].imgpath}" alt="...">
+        <div class="caption">
+          <h3>${res[i].name}</h3>
+          <p>采用新型的工业</p>
+          <p><a href="list.html" class="btn btn-primary" role="button" >了解更多</a> 
+        </div>
+      </div>
+    </div>
+  </li>
+
+            `
+        }
+        document.querySelector(".container .row").innerHTML = str;
+        
+    })
+
+
+var mySwiper = new Swiper('.swiper-container',{
+pagination: {
+    el: '.swiper-pagination',
+  },
+})
+
+
+
+
+</script>
+</html>

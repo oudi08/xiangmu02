@@ -1,0 +1,253 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Document</title>
+<link rel="stylesheet" href="./css/bootstrap.min.css">
+<link rel="stylesheet" href="./css/detail.css">
+</head>
+<body>
+<div class="page-header">
+    <h1>详情页面 <small>夏季T恤</small></h1>
+</div>
+<div class="header">
+        <div class="boxL">
+            <div class="middle">
+                <img src="" id="middleImg">
+                <div class="shade"></div>
+                <div class="big">
+                    <img src="" id="bigImg">
+                </div>
+            </div>
+            <div class="small">
+                <ul>
+                </ul>
+            </div>
+        </div>
+    <div class="right">
+        <p><b>商品名称：</b><span id="goodsname"></span></p>
+        <p><b>商品价格：</b>￥<span id="price">00</span>元</p>
+        <p class="color"><b>颜色：</b>
+        </p>
+        <p>
+            <a href="javascript:;" class="btn btn-primary addCart">加入购物车</a>
+            <a href="" class="btn btn-primary">立即购买</a>
+        </p>
+    </div>
+</div>
+<div style="clear:both;"></div>
+<div>
+    <h1>商品描述：</h1>
+    <div class="introduce">
+    
+    </div>
+</div>
+
+</body>
+<script src="./js/promiseAjax.js"></script>
+<script src="./js/jquery-3.4.1.min.js"></script>
+<script src="./js/cookie.js"></script>
+<script type="text/javascript">
+    function Enlarge(){
+        // 获取元素
+        this.boxL = document.querySelector(".boxL");
+        this.middle = this.boxL.querySelector(".middle");
+        this.middleImg = this.boxL.querySelector(".middle>img");
+        this.shade = this.boxL.querySelector(".shade");
+        this.big = this.boxL.querySelector(".big");
+        this.bigImg = this.boxL.querySelector(".big>img");
+        this.smallImgs = this.boxL.querySelectorAll(".small>img");
+        var _this = this;
+        // 鼠标移入显示遮罩和大图
+        this.middle.onmouseover = ()=>{
+            this.over();
+        }
+        this.middle.onmouseout = ()=>{
+            this.out();
+        }
+
+        //
+        //
+        //
+        var params = window.location.search;
+        // console.log(params);
+        // 将url中的id的值拿出来
+        // 使用正则将这个数字提取出来
+        var reg = /id=(\d+)/;
+        var id = params.match(reg)[1];
+        sendAjax({
+    url:"./server/detail.php",
+    data:{
+        id:id
+    },
+    type:"post",
+    success:function(res){
+        if(res.status==200){
+            var data = res.data;
+            var  arr = data.smallimgs.split("====");
+        for(var i=0;i<this.arr.length;i++){
+            this.arr[i].onclick=function(){
+                _this.click(this);
+            }
+        }
+        Enlarge.prototype.click = function(ele){
+        for(var i=0;i<this.arr.length;i++){
+            this.arr[i].className = '';
+        }
+        ele.className = "active"
+        this.middleImg.src = this.bigImg.src = ele.src
+    }
+        }
+    }
+});
+        
+    }
+    Enlarge.prototype.over = function(){
+        this.shade.style.display = this.big.style.display = "block";
+        // 中等盒子的移动事件
+        this.middle.onmousemove= e=>{
+            // 拖拽 - 获取光标位置
+            var e = e || window.event;
+            var x = e.pageX;
+            var y = e.pageY;
+            var l = x - this.boxL.offsetLeft - this.shade.clientWidth/2;
+            if(l<=0){
+                l = 0;
+            }
+            if(l>=this.middle.clientWidth - this.shade.clientWidth){
+                l=this.middle.clientWidth - this.shade.clientWidth
+            }
+            this.shade.style.left = l + "px"
+            var t = y - this.boxL.offsetTop - this.shade.clientHeight/2;
+            if(t<=0){
+                t = 0;
+            }
+            if(t>=this.middle.clientHeight - this.shade.clientHeight){
+                t=this.middle.clientHeight - this.shade.clientHeight
+            }
+            this.shade.style.top = t + "px"
+            // 计算比例
+            var percentX = this.shade.offsetLeft/this.middle.clientWidth;
+            var percentY = this.shade.offsetTop/this.middle.clientHeight;
+            // 根据比例计算大图应该定位的值
+            var bigX = this.bigImg.clientWidth * percentX;
+            var bigY = this.bigImg.clientHeight * percentY;
+            // 将值设置给大图的定位
+            this.bigImg.style.left = -bigX + "px";
+            this.bigImg.style.top = -bigY + "px";
+        }
+    }
+    Enlarge.prototype.out = function(){
+        this.shade.style.display = this.big.style.display = "none"
+    }
+    var enlarge = new Enlarge();
+    </script>
+
+<script type="text/javascript">
+var params = window.location.search;
+var reg = /id=(\d+)/;
+var id = params.match(reg)[1];
+sendAjax({
+    url:"./server/detail.php",
+    data:{
+        id:id
+    },
+    type:"post",
+    success:function(res){
+        if(res.status==200){
+            var data = res.data;
+            $("#middleImg").attr("src",data.imgpath);
+            $("#bigImg").attr("src",data.imgpath);
+            $("#goodsname").text(data.name);
+            $("#price").text(data.price);
+            $(".introduce").html(data.introduce);
+            var  arr = data.smallimgs.split("====");
+            for(var i=0;i<arr.length;i++){
+                var li = $("<li><img src='"+arr[i]+"' width='50' height='50'></li>");
+                $(".small ul").append(li);
+            }
+            // 颜色
+            var colors = data.colors.split("====");
+            for(var i=0;i<colors.length;i++){
+                var span = $("<span class='btn btn-warning'>"+colors[i]+"</span>");
+                $(".color").append(span);
+            }
+        }
+    }
+});
+
+// 点击加入购物车的逻辑
+/*
+1.判断是否登陆，没有登陆就应该让用户去登陆，再来加入购物车
+2.将当前这个商品数据存起来
+    正常的项目，购物车数据存在了数据库 - 数据库比较复杂
+    使用本地存储来存储购物车的数据
+3.存储数据的时候
+    本地存储要存入字符串
+        商品id、用户、数量 == 组合成一个对象
+        将对象转成json字符串
+
+*/
+
+$(".addCart").click(function(){
+    // console.log(123);
+    // 判断用户是否登录
+    // 从cookie中获取用户名
+    var username = getCookie("username");
+    // console.log(username);
+    if(!username){ // 没有登陆
+        alert("请先登陆");
+        location.href = 'login.html'; 
+        return false;
+    }
+ 
+
+    /*
+    1.首先从本地存储中获取数据
+    2.判断本地存储中是否有数据
+        1.有数据
+            是否有当前这个商品的数据
+                有
+                    将其中的数量++
+                没有
+                    重新放一个当前商品的数据进去
+        2.没有数据
+            做一个空数组，放进当前商品的数据，放到本地存储中
+
+    */
+    var data = localStorage.getItem("data");
+    if(data){ // 有数据
+        data = JSON.parse(data);
+        var index = data.findIndex(function(v){
+            return v.id == id;
+        }); 
+        if(index>=0){
+            data[index].number++;
+        }else{
+            var obj = {
+                username:username,
+                id:id,
+                number:1
+            };
+            data.push(obj);
+        }
+        localStorage.setItem("data",JSON.stringify(data));
+        
+        }else{   // 没有本地存储
+            var data = []; // 空数组
+            var obj = { // 放入当前商品的数据
+                username:username,
+                id:id,
+                number:1
+            };
+            data.push(obj);
+            localStorage.setItem("data",JSON.stringify(data));
+        }
+        alert("添加购物车成功");
+        location.href = "cart.html"
+    return false;
+});
+
+
+</script>
+</html>

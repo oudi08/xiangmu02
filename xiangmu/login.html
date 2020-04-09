@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>登陆页面</title>
+<link rel="stylesheet" href="./css/bootstrap.min.css">
+<link rel="stylesheet" href="./css/login.css">
+</head>
+<body>
+    <div class="denglu">
+<div class="h1 text-center">登陆页面</div>
+<form class="form-horizontal">
+    <div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label">用户名：</label>
+        <div class="col-sm-10">
+        <input type="text" class="form-control" id="username" placeholder="请输入用户名">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">密码：</label>
+        <div class="col-sm-10">
+        <input type="password" class="form-control" id="password" placeholder="请输入密码">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="remember"> 记住
+            </label>
+        </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+        <button type="button" class="btn btn-default">登陆</button>
+        </div>
+    </div>
+</form>
+</div>
+</body>
+<script src="./js/promiseAjax.js"></script>
+<script src="./js/cookie.js"></script>
+<script type="text/javascript">
+// 获取用户名的文本框
+var u = document.querySelector("#username");
+// 页面一加载就应该看看是否有记住的用户名 - 从cookie中拿uname
+var uname = getCookie("uname");
+// console.log(uname);
+if(uname){
+    // 给用户名的文本框添加value
+    u.value = uname;
+}else{
+    u.value = '';
+}
+
+var btn = document.querySelector("button[type='button']");
+btn.addEventListener("click",login);
+function login(){
+    var username = u.value.trim();
+    var password = document.querySelector("#password").value.trim();
+    // 获取是否记住用户名
+    var rem = document.querySelector("[name='remember']");
+    pAjax({
+        url:"./server/login.php",
+        type:"post",
+        data:{
+            username:username,
+            password:password
+        }
+    }).then(function(res){
+        // console.log(res);
+        if(res.status==200){
+            // 先存cookie
+            setCookie("username",username,7200);
+            // 看看是否要记住用户名
+            if(rem.checked){
+                // 要记住 - 还是往cookie中记
+                setCookie("uname",username,3600*24*7);
+            }else{
+                // 清空
+                removeCookie("uname");
+            }
+            alert(res.msg);
+            // return;
+            location.href = 'home.html';
+        }else{
+            alert(res.msg);
+            return;
+        }
+    });
+    
+}
+</script>
+</html>
